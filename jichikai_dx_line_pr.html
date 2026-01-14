@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>自治会デジタル(LINE)連絡網導入に関するご提案（WEB版）</title>
+  <meta name="description" content="自治会デジタル(LINE)連絡網導入に関するご提案（WEB再構成版）" />
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1621;
+      --panel2:#0c131d;
+      --text:#e8eef6;
+      --muted:#a9b6c7;
+      --line:#223042;
+      --accent:#6aa9ff;
+      --accent2:#64d2ff;
+      --ok:#54d18e;
+      --warn:#ffd166;
+      --danger:#ff6b6b;
+      --radius:14px;
+      --shadow: 0 10px 28px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    *{box-sizing:border-box;}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1100px 700px at 20% 0%, rgba(106,169,255,.18), transparent 60%),
+                  radial-gradient(900px 600px at 90% 10%, rgba(100,210,255,.12), transparent 55%),
+                  radial-gradient(1200px 900px at 50% 90%, rgba(84,209,142,.08), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.65;
+    }
+
+    a{color:var(--accent); text-decoration:none;}
+    a:hover{text-decoration:underline;}
+
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:28px 16px 72px;
+    }
+
+    .hero{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(15,22,33,.92), rgba(12,19,29,.92));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px 20px;
+    }
+
+    .hero h1{
+      margin:0 0 6px;
+      font-size:clamp(22px, 2.4vw, 32px);
+      letter-spacing:.02em;
+    }
+
+    .hero .sub{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .pill strong{color:var(--text); font-weight:600;}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+    }
+    .btn:hover{border-color:rgba(106,169,255,.55); background:rgba(106,169,255,.08);}
+    .btn:active{transform:translateY(1px);}
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr;}
+    }
+
+    .card{
+      border:1px solid var(--line);
+      background:rgba(15,22,33,.75);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px 16px;
+    }
+
+    h2{
+      margin:26px 0 10px;
+      font-size:20px;
+      letter-spacing:.01em;
+    }
+    h3{
+      margin:18px 0 8px;
+      font-size:16px;
+      letter-spacing:.01em;
+    }
+    p{margin:10px 0;}
+    ul{margin:8px 0 10px 18px;}
+    li{margin:6px 0;}
+    .muted{color:var(--muted);}
+    .small{font-size:13px;}
+    .note{
+      border-left:3px solid rgba(106,169,255,.7);
+      padding:10px 12px;
+      background:rgba(106,169,255,.06);
+      border-radius:12px;
+      color:var(--text);
+    }
+
+    /* Tabs */
+    .tabs{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:rgba(12,19,29,.65);
+      box-shadow:var(--shadow);
+    }
+    .tablist{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      padding:12px 12px 10px;
+      border-bottom:1px solid var(--line);
+      background:rgba(15,22,33,.65);
+    }
+    .tab{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      border-radius:12px;
+      padding:9px 10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+      letter-spacing:.01em;
+      transition: background .15s ease, border-color .15s ease, color .15s ease;
+      user-select:none;
+    }
+    .tab[aria-selected="true"]{
+      color:var(--text);
+      border-color:rgba(106,169,255,.55);
+      background:rgba(106,169,255,.12);
+    }
+    .tab:focus{outline:2px solid rgba(106,169,255,.55); outline-offset:2px;}
+    .tabpanel{
+      padding:18px 16px 10px;
+      display:none;
+    }
+    .tabpanel[aria-hidden="false"]{display:block;}
+
+    /* Tables */
+    .tablewrap{
+      margin:10px 0 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:auto;
+      background:rgba(0,0,0,.18);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:720px;
+      font-size:13px;
+    }
+    th,td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(34,48,66,.75);
+      vertical-align:top;
+    }
+    th{
+      text-align:left;
+      color:var(--text);
+      background:rgba(255,255,255,.03);
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    tr:hover td{background:rgba(255,255,255,.02);}
+    .k{
+      color:var(--muted);
+      font-weight:600;
+      white-space:nowrap;
+    }
+
+    /* Appendix / accordion */
+    details{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:rgba(15,22,33,.7);
+      padding:12px 12px;
+      box-shadow:var(--shadow);
+    }
+    summary{
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.01em;
+      list-style:none;
+      outline:none;
+    }
+    summary::-webkit-details-marker{display:none;}
+    .appendix{
+      margin-top:14px;
+      padding-top:10px;
+      border-top:1px dashed rgba(34,48,66,.9);
+    }
+
+    /* Footer */
+    footer{
+      margin-top:26px;
+      color:var(--muted);
+      font-size:12px;
+      border-top:1px solid rgba(34,48,66,.7);
+      padding-top:14px;
+    }
+
+    /* Print */
+    @media print{
+      body{background:#fff; color:#000;}
+      .hero,.card,.tabs,details{box-shadow:none; background:#fff; border-color:#ccc;}
+      a{color:#000; text-decoration:underline;}
+      .tablist{display:none;}
+      .tabpanel{display:block !important; padding:0;}
+      table{min-width:0;}
+      .tablewrap{overflow:visible;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- HERO -->
+    <header class="hero" id="top">
+      <h1>自治会デジタル（LINE）連絡網導入に関するご提案（WEB版）</h1>
+      <p class="sub">
+        目的：班長の負担軽減／防災等の緊急連絡の迅速化／役員交代を前提にした持続可能な運営基盤の構築
+      </p>
+
+      <div class="meta" aria-label="概要">
+        <div class="pill"><strong>対象</strong> 自治会役員会・班長・会員</div>
+        <div class="pill"><strong>方式</strong> LINEグループ → オープンチャット → 公式（段階導入）</div>
+        <div class="pill"><strong>原則</strong> 班LINEは連絡専用／相談・要望はLINE外</div>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn" type="button" id="btnJumpTabs">2〜7章（タブ）へ</button>
+        <button class="btn" type="button" id="btnJumpAppendix">付録（資料①）へ</button>
+      </div>
+    </header>
+
+    <!-- INTRO + CH1 -->
+    <section class="grid" aria-label="序文と第1章">
+      <article class="card">
+        <h2>序文：はじめに</h2>
+        <p>
+          自治会役員会の皆様、本提案書の目的は、LINEを活用した新しいデジタル連絡網の導入を、
+          自治会運営の基盤を強化し、将来にわたる持続可能性を確保するための戦略的投資として
+          ご承認いただくことにあります。
+        </p>
+        <p>
+          本提案は、単に新しいツールを導入するものではございません。これは、
+          班長の皆様の負担を体系的に軽減し、防災情報などの緊急連絡を迅速かつ確実に伝達し、
+          そして将来の役員の誰もが安心して運営を引き継げる「持続可能な仕組み」を構築するためのご提案です。
+        </p>
+        <p class="note">
+          皆様のご理解とご承認を賜りたく、ここに具体的な計画を提示いたします。
+        </p>
+
+        <h2>1. 現状の連絡網における課題とデジタル化の必要性</h2>
+        <p class="muted">
+          本セクションでは、現在の連絡手段が内包する潜在的な課題を明らかにし、なぜ今デジタル化が戦略的に重要なのかを論証します。
+        </p>
+        <ul>
+          <li><strong>情報伝達の遅延：</strong>防災・防犯等の緊急情報や急な行事変更で、回覧板は時間を要し、電話も不在者に届かないリスク。</li>
+          <li><strong>班長の負担増大：</strong>印刷・配布・回収・再連絡・安否確認など、時間的・心理的負担が大きい。</li>
+          <li><strong>情報の到達度の不確実性：</strong>回覧板の滞留、抜き取り、口頭の聞き間違い等で、正確な到達確認が困難。</li>
+          <li><strong>記録性の欠如：</strong>口頭連絡は後から確認が難しく「言った・言わない」トラブルの温床になり得る。</li>
+        </ul>
+        <p>
+          これらはボランティアの献身でカバーされてきましたが、実態として
+          <strong>特定の個人への過度な依存という構造的リスク</strong>を内包します。
+        </p>
+        <p>
+          将来にわたって誰もが安心して役割を担える体制のため、課題を<strong>仕組みで解決するデジタル化</strong>が不可欠です。
+        </p>
+      </article>
+
+      <aside class="card">
+        <h2>読み方ガイド</h2>
+        <p class="muted">
+          2〜7章は、役員会での検討・合意形成がしやすいよう、タブで分割しています。
+        </p>
+        <ul>
+          <li><strong>方式選定が気になる</strong> → 2章</li>
+          <li><strong>導入が不安</strong> → 3章</li>
+          <li><strong>トラブルが心配</strong> → 4章</li>
+          <li><strong>非LINE会員の配慮</strong> → 5章</li>
+          <li><strong>責任・引継ぎ</strong> → 6章</li>
+          <li><strong>問い合わせ・基盤整備</strong> → 補足</li>
+          <li><strong>効果と承認のお願い</strong> → 7章</li>
+        </ul>
+        <p class="small muted">
+          ※ 内容はPDFの構成に沿って再配置しています（文章・趣旨は変更しない想定）。
+        </p>
+      </aside>
+    </section>
+
+    <!-- TABS -->
+    <section class="tabs" id="tabsSection" aria-label="第2章〜第7章（タブ）">
+      <div class="tablist" role="tablist" aria-label="章タブ">
+        <button class="tab" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="true" tabindex="0">2章：全体像と方式選定</button>
+        <button class="tab" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1">3章：段階的導入計画</button>
+        <button class="tab" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1">4章：運用ルール</button>
+        <button class="tab" role="tab" id="tab-5" aria-controls="panel-5" aria-selected="false" tabindex="-1">5章：非LINE配慮</button>
+        <button class="tab" role="tab" id="tab-6" aria-controls="panel-6" aria-selected="false" tabindex="-1">6章：運営体制と引継ぎ</button>
+        <button class="tab" role="tab" id="tab-sup" aria-controls="panel-sup" aria-selected="false" tabindex="-1">補足：問い合わせ窓口と基盤</button>
+        <button class="tab" role="tab" id="tab-7" aria-controls="panel-7" aria-selected="false" tabindex="-1">7章：結論と承認</button>
+      </div>
+
+      <!-- Panel 2 -->
+      <article class="tabpanel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" aria-hidden="false">
+        <h2>2. 提案するLINE連絡網の全体像と方式選定の根拠</h2>
+        <p>
+          自治会の多様なコミュニケーション形態に合わせて、3種類のLINE機能を段階的に活用する全体像を示します。
+          単一ツールで全てを賄うと混乱が生じるため、目的別に機能を使い分ける「3段階活用モデル」を提案します。
+        </p>
+
+        <h3>3段階活用モデル</h3>
+        <div class="tablewrap" role="region" aria-label="3段階活用モデル（表）" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th>活用段階</th>
+                <th>主な目的</th>
+                <th>使用するLINE機能</th>
+                <th>特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="k">日常連絡</td>
+                <td>班ごとの確実な連絡</td>
+                <td>LINEグループ</td>
+                <td>非公開・招待制</td>
+              </tr>
+              <tr>
+                <td class="k">全体共有</td>
+                <td>自治会全体の掲示板</td>
+                <td>LINEオープンチャット</td>
+                <td>閲覧中心・任意参加</td>
+              </tr>
+              <tr>
+                <td class="k">公式通知</td>
+                <td>回覧板のデジタル代替</td>
+                <td>LINE公式アカウント</td>
+                <td>役員からの一方向配信・将来拡張</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>方式比較と選定理由の論証</h3>
+        <p class="muted">
+          特に初期導入として「LINEグループ」を推奨する理由を、自治会特有の判断軸に沿って比較表で示します。
+        </p>
+
+        <div class="tablewrap" role="region" aria-label="方式比較表（表）" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>LINEグループ（本提案）</th>
+                <th>LINEオープンチャット</th>
+                <th>LINE公式アカウント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="k">参加方法</td>
+                <td>招待制（URL/招待）</td>
+                <td>URL・検索</td>
+                <td>友だち追加</td>
+              </tr>
+              <tr>
+                <td class="k">実名性</td>
+                <td>高い（LINE名そのまま）</td>
+                <td>低い（匿名可）</td>
+                <td>不要</td>
+              </tr>
+              <tr>
+                <td class="k">管理者</td>
+                <td>明確（班長など）</td>
+                <td>管理者必要</td>
+                <td>運営者のみ</td>
+              </tr>
+              <tr>
+                <td class="k">双方向会話</td>
+                <td>◎（ルールで制御）</td>
+                <td>◎（荒れやすい）</td>
+                <td>×（原則不可）</td>
+              </tr>
+              <tr>
+                <td class="k">高齢者対応</td>
+                <td>◎</td>
+                <td>△</td>
+                <td>◎</td>
+              </tr>
+              <tr>
+                <td class="k">誤操作リスク</td>
+                <td>低</td>
+                <td>中</td>
+                <td>低</td>
+              </tr>
+              <tr>
+                <td class="k">情報拡散制御</td>
+                <td>◎</td>
+                <td>△</td>
+                <td>◎</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          自治会運営では「誰が参加しているか」という実名性（責任の所在）と高齢者対応を両立する必要があります。
+          この観点から、初期導入は「LINEグループ」が最適であると結論付けます。
+          目的に応じて機能を使い分けることで混乱を防ぎ、デジタル化の恩恵を最大化できます。
+        </p>
+      </article>
+
+      <!-- Panel 3 -->
+      <article class="tabpanel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" aria-hidden="true">
+        <h2>3. 安全性を最優先した段階的導入計画（ロードマップ）</h2>
+        <p>
+          全会員への配慮を最優先し、無理なく安全に導入を進めるための3フェーズのロードマップを提示します。
+        </p>
+
+        <h3>フェーズ1：基盤構築（即時実施）</h3>
+        <ul>
+          <li><strong>目的：</strong>連絡網のデジタル基盤として、班ごとの「LINEグループ」を設立。</li>
+          <li><strong>内容：</strong>各班の班長が管理者となり、班員名簿に基づいて会員を招待。クローズド環境を構築。</li>
+          <li><strong>強調点：</strong>会話や相談の場としては利用せず、「班長からの連絡を確認する場」として運用を徹底。</li>
+        </ul>
+
+        <h3>フェーズ2：全体への展開（運用安定後）</h3>
+        <ul>
+          <li><strong>目的：</strong>自治会全体の「お知らせ掲示板」として、閲覧専用の「LINEオープンチャット」を導入。</li>
+          <li><strong>内容：</strong>行事案内や防災情報など全会員共有情報を集約。発言権を管理者に限定し整理状態を保つ。</li>
+          <li><strong>強調点：</strong>参加は任意。フェーズ1が安定し、会員が慣れてから着手する低リスク計画。</li>
+        </ul>
+
+        <h3>フェーズ3：将来的な拡張（DX化推進）</h3>
+        <ul>
+          <li><strong>目的：</strong>紙の回覧板の本格的なデジタル代替として「LINE公式アカウント」を検討。</li>
+          <li><strong>内容：</strong>PDF資料の配信、Googleフォーム連携（アンケート等）で業務効率化とペーパーレス化。</li>
+          <li><strong>強調点：</strong>将来的目標。デジタル習熟度が十分に高まり、ニーズが明確になった段階で役員会で慎重に検討。</li>
+        </ul>
+
+        <p class="note">
+          小さな成功体験を積み重ねながら段階を踏むことで、会員の不安を最小限に抑え、連絡網を着実に定着させます。
+        </p>
+      </article>
+
+      <!-- Panel 4 -->
+      <article class="tabpanel" role="tabpanel" id="panel-4" aria-labelledby="tab-4" aria-hidden="true">
+        <h2>4. トラブルを未然に防ぐための具体的運用ルール</h2>
+        <p>
+          デジタル導入時に懸念される会員間トラブルや管理者負担増を未然に防ぐため、事前に設計した明確なルールを提示します。
+        </p>
+
+        <h3>核心となる基本方針</h3>
+        <ul>
+          <li><strong>原則は一方向の連絡網</strong></li>
+          <li><strong>「既読」＝「確認」と定義</strong></li>
+          <li><strong>返信・あいさつは不要</strong></li>
+          <li><strong>相談・要望はLINE外で</strong></li>
+        </ul>
+
+        <h3>ルールの効果分析</h3>
+        <ul>
+          <li>
+            <strong>班長の負担軽減：</strong>
+            返信対応や相談対応の迷いを減らし、班長は「連絡の伝達」に集中できる。
+          </li>
+          <li>
+            <strong>会員の心理的安全性：</strong>
+            「返信しないといけない」プレッシャーを解消。特に不慣れな方・高齢者が安心して参加できる。
+          </li>
+          <li>
+            <strong>情報伝達の明確化：</strong>
+            雑談・挨拶を抑え、タイムラインが整理され、重要情報を見つけやすい。
+          </li>
+        </ul>
+
+        <p class="muted small">
+          これらのルールは、グループ作成時に「グループNOTE」で明記し固定することで、属人的運用を避け、誰が班長でも同品質の運用を可能にします。
+        </p>
+      </article>
+
+      <!-- Panel 5 -->
+      <article class="tabpanel" role="tabpanel" id="panel-5" aria-labelledby="tab-5" aria-hidden="true">
+        <h2>5. 全会員への配慮：LINEを使わない方への対応策</h2>
+        <p>
+          「誰も置き去りにしない」という基本姿勢を明確にし、LINEを利用しない（できない）会員に情報格差が生じない並行運用策を提示します。
+        </p>
+
+        <h3>基本原則の明示</h3>
+        <ul>
+          <li>LINEは<strong>追加の連絡手段</strong>であり、従来の連絡手段を完全に代替・否定するものではない。</li>
+          <li>LINE利用は<strong>完全に任意</strong>であり、参加を強制しない。</li>
+          <li>LINEを使わないことを理由に、<strong>情報的・精神的な不利益</strong>が生じないよう最大限配慮する。</li>
+        </ul>
+
+        <h3>代替連絡方法の具体例</h3>
+        <ul>
+          <li>従来通りの回覧板</li>
+          <li>重要事項をまとめた書面でのポスティング配布</li>
+          <li>必要に応じた班長からの直接の口頭連絡</li>
+          <li>防災・防犯など緊急時の電話連絡</li>
+        </ul>
+
+        <h3>会員への周知計画</h3>
+        <p>
+          これらの配慮事項については、資料①を基に作成した『班LINE（連絡用）のご案内』を全戸配布し、事前に丁寧に説明します。
+          利用しない方への対応策を併記することで、全会員の理解と安心感を得ながら導入を進めます。
+        </p>
+
+        <p class="note">
+          既存手段とデジタルツールを柔軟に併用することで、全会員の安心感を確保しつつ情報伝達効率を向上させます。
+        </p>
+      </article>
+
+      <!-- Panel 6 -->
+      <article class="tabpanel" role="tabpanel" id="panel-6" aria-labelledby="tab-6" aria-hidden="true">
+        <h2>6. 持続可能な運営体制の構築（管理・引継ぎ計画）</h2>
+
+        <h3>本連絡網の位置づけと責任の所在</h3>
+        <p>
+          本提案に基づいて構築されるLINE連絡網は、各班の班長が作成・運用を行いますが、
+          班長個人の判断や責任に委ねられるものではありません。
+        </p>
+        <p>
+          本連絡網は、自治会の連絡を円滑かつ継続的に行うための公式な仕組みとして位置づけ、
+          その運用方針・ルール・管理については、自治会および役員会が責任をもって定め、維持していくものとします。
+        </p>
+        <p class="muted small">
+          この位置づけを明確にすることで、個人の善意や判断に依存しない、将来にわたって継続可能な連絡体制を確保します。
+        </p>
+
+        <h3>管理体制の明確化</h3>
+        <p class="muted">上記の位置づけを前提として、班長の役割と責任範囲を明確に定義します。</p>
+
+        <h4>役割の限定</h4>
+        <p>
+          班長の役割は、あくまで役員会からの情報を正確に会員へ伝える「連絡の伝達者」です。
+          会員からの相談や要望に対する判断・対応は、班長個人の責任範囲には含めません。
+        </p>
+
+        <h4>判断基準の共有</h4>
+        <p>
+          班長が一人で判断に迷うような相談や要望が寄せられた場合は、速やかに役員会へ差し戻すことを基本とします。
+          これにより、判断の属人化を防ぎ、自治会として一貫した対応を可能にします。
+        </p>
+
+        <h4>支援ツールの整備</h4>
+        <p>
+          グループの作り方、運用ルール、想定される対応例などをまとめた「管理マニュアル」および「グループ作成テンプレート」を整備します。
+          これにより、誰が班長になっても同じ基準・同じ品質で運用できる体制を構築します。
+        </p>
+
+        <h3>引継ぎ計画の提示</h3>
+        <p>
+          班長の交代が、連絡網の混乱や機能不全につながらないよう、標準化された引き継ぎ手順を用意します。
+          具体的には「引き継ぎチェックリスト」を用いて、新旧班長が以下の重要事項を確実に共有します。
+        </p>
+        <ul>
+          <li>LINEグループの管理者権限の移譲</li>
+          <li>運用ルールおよび役割分担の再確認</li>
+          <li>LINEを利用しない会員の把握と、代替連絡方法の共有</li>
+        </ul>
+
+        <h3>まとめ</h3>
+        <p>
+          本章で示した管理体制および引継ぎ計画により、LINE連絡網は「便利な取り組み」ではなく、
+          自治会運営を支える安定した基盤として位置づけられます。
+          これにより、役員・班長・会員のいずれかに負担や責任が偏ることなく、将来にわたって安心して引き継げる運営体制を実現します。
+        </p>
+      </article>
+
+      <!-- Panel Supplement -->
+      <article class="tabpanel" role="tabpanel" id="panel-sup" aria-labelledby="tab-sup" aria-hidden="true">
+        <h2>補足. 問い合わせ窓口の明確化とデジタル基盤整備の必要性</h2>
+
+        <p>
+          本提案で示した運用ルールを円滑に機能させるためには、会員からの相談・要望を受け止める
+          「公式な問い合わせ先」を明確にすることが不可欠です。
+        </p>
+
+        <p>
+          班LINEでは相談を扱わないという方針は、班長の負担軽減とトラブル防止に大きな効果をもたらしますが、
+          同時に、会員が安心して問い合わせできる代替の連絡先（受け皿）が必要となります。
+        </p>
+
+        <p class="note">そこで、以下を補足提案します。</p>
+
+        <h3>■ 自治会公式の問い合わせ先の明確化</h3>
+        <ul>
+          <li>自治会として公式な問い合わせ窓口を一本化する</li>
+          <li>現時点では、既存の電話番号／役員会で指定した連絡先など、実情に合わせて設定</li>
+        </ul>
+
+        <h3>■ LINE連絡網に合わせた Googleアカウントの同時導入（補足提案）</h3>
+        <p>
+          将来的な引き継ぎの容易さと情報管理の公平性を考慮し、自治会名義のGoogleアカウントを早期に1つ取得することを推奨します。
+          このアカウントを用いることで、以下が可能になります。
+        </p>
+        <ul>
+          <li>問い合わせ専用のGmailアドレス設置</li>
+          <li>役員交代時も個人に依存しない引き継ぎ</li>
+          <li>将来的な Googleフォームによる問い合わせ受付</li>
+          <li>書類・回覧資料の安全な保管・配信</li>
+        </ul>
+
+        <h3>■ 本提案との関係性</h3>
+        <ul>
+          <li><strong>班LINE：</strong>連絡専用</li>
+          <li><strong>問い合わせ先：</strong>相談・要望の受け皿</li>
+          <li><strong>Googleアカウント：</strong>属人化を防ぐ管理基盤</li>
+        </ul>
+
+        <p class="muted">
+          この役割分担により、LINE運用ルールは無理なく、長期的に維持可能となります。
+        </p>
+
+        <p class="small muted">
+          なお、「LINEで相談を受けないためには、相談できる“正式な窓口”を用意しておく必要があります。
+          Googleアカウントは、その受け皿を将来にわたって個人に依存させないための保険です。」
+        </p>
+      </article>
+
+      <!-- Panel 7 -->
+      <article class="tabpanel" role="tabpanel" id="panel-7" aria-labelledby="tab-7" aria-hidden="true">
+        <h2>7. 結論：導入による期待効果と承認のお願い</h2>
+        <p>
+          本提案が承認された場合に自治会全体にもたらされるメリットを総括し、次のステップへのご承認をお願い申し上げます。
+          本提案のLINE連絡網を導入することにより、以下の効果が期待できます。
+        </p>
+
+        <ul>
+          <li>
+            <strong>役員・班長の負担軽減と活動の持続性向上：</strong>
+            連絡業務の効率化により時間的・心理的負担を削減し、担い手不足の課題解消に貢献。
+          </li>
+          <li>
+            <strong>迅速かつ正確な情報伝達体制の確立：</strong>
+            緊急時に全会員へ迅速・一斉伝達が可能となり、地域の安全・安心に寄与。
+          </li>
+          <li>
+            <strong>将来を見据えた持続可能な組織基盤の構築：</strong>
+            明確なルールと引継ぎ体制により、一過性ではない自治会の共有財産として機能。
+          </li>
+        </ul>
+
+        <h3>費用対効果</h3>
+        <p>
+          本提案で活用するLINEの基本機能（LINEグループ、LINEオープンチャット）は、すべて無料で利用可能です。
+          費用を一切かけることなく、多くの効果を享受できるコストパフォーマンスの高い施策です。
+        </p>
+
+        <h3>承認のお願い</h3>
+        <p>
+          以上の理由から、本提案をご承認いただき、自治会の持続可能な運営基盤を構築する第一歩として、
+          速やかに「フェーズ1：班ごとのLINEグループ設立」に着手する許可をいただきたく、謹んでお願い申し上げます。
+          本件が自治会の未来にとって価値ある一歩となることを確信しております。
+        </p>
+      </article>
+    </section>
+
+    <!-- APPENDIX -->
+    <section id="appendixSection" aria-label="付録">
+      <h2>付録：資料①（会員向け配布用）</h2>
+
+      <details>
+        <summary>資料①『班LINE（連絡用）のご案内』を開く</summary>
+
+        <div class="appendix">
+          <h3>会員の皆さまへ　班LINE（連絡用）のご案内</h3>
+
+          <h4>■ このLINEは何のためのもの？</h4>
+          <p>
+            このLINEグループは、班長から会員の皆さまへ、自治会・班の連絡をお知らせするための連絡網です。<br />
+            会話や相談の場ではありません。
+          </p>
+
+          <h4>■ ふだんの使い方</h4>
+          <ul>
+            <li>連絡を見ていただくだけで大丈夫です</li>
+            <li>既読がつけば確認できたと判断します</li>
+            <li>返信やあいさつは不要です</li>
+            <li>スタンプでの反応はOKです</li>
+          </ul>
+
+          <h4>■ このLINEで行わないこと</h4>
+          <ul>
+            <li>会員同士の個人的なやり取り</li>
+            <li>相談・要望・意見の書き込み</li>
+            <li>あいさつだけの返信</li>
+          </ul>
+          <p class="small muted">※ 円滑な連絡のためのルールです</p>
+
+          <h4>■ 相談・要望がある場合</h4>
+          <ul>
+            <li>まずは対面で班長へご相談ください</li>
+            <li>内容を共有し、お互いに了承した場合のみ個別LINEを使います</li>
+            <li>自治会への要望は、直接自治会へお願いします</li>
+          </ul>
+
+          <h4>■ 投票や返答について</h4>
+          <ul>
+            <li>現在は、投票機能などは使いません</li>
+            <li>基本は既読・スタンプのみで大丈夫です（将来、必要に応じて役員協議の上で検討します）</li>
+          </ul>
+
+          <h4>■ LINEを使わない方へ</h4>
+          <ul>
+            <li>LINEを使う・使わないは自由です</li>
+            <li>使わない方にも、これまで通り回覧板・書面・口頭・電話などで連絡します</li>
+            <li>使わないことで不利益はありません</li>
+          </ul>
+
+          <h4>■ 操作に不安がある方へ</h4>
+          <p>
+            このLINEは、見るだけで大丈夫です。<br />
+            文字を打ったり、返信する必要はありません。<br />
+            分からないことは、これまで通り班長や自治会へお声かけください。
+          </p>
+
+          <h4>■ お願い</h4>
+          <p>
+            この班LINEは、連絡を分かりやすく、トラブルなく行うためのものです。<br />
+            皆さまのご理解とご協力をお願いいたします。
+          </p>
+
+          <p class="small muted">（※ この内容はグループNOTEにも掲載しています）</p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <div>WEB版：PDFの内容を読みやすく再配置（2〜7章はタブ表示、表は表として表示）</div>
+      <div>印刷時はタブを解除し、すべての章が展開されます。</div>
+      <div style="margin-top:8px;"><a href="#top">▲ ページ上部へ</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Smooth jump buttons
+    const btnJumpTabs = document.getElementById('btnJumpTabs');
+    const btnJumpAppendix = document.getElementById('btnJumpAppendix');
+    btnJumpTabs?.addEventListener('click', () => {
+      document.getElementById('tabsSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    btnJumpAppendix?.addEventListener('click', () => {
+      document.getElementById('appendixSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Tabs (accessible)
+    const tabs = Array.from(document.querySelectorAll('.tab[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('.tabpanel[role="tabpanel"]'));
+
+    function setActiveTab(tabId){
+      const activeTab = document.getElementById(tabId);
+      if(!activeTab) return;
+
+      tabs.forEach(t => {
+        const selected = (t.id === tabId);
+        t.setAttribute('aria-selected', selected ? 'true' : 'false');
+        t.tabIndex = selected ? 0 : -1;
+      });
+
+      panels.forEach(p => {
+        const shouldShow = (p.getAttribute('aria-labelledby') === tabId);
+        p.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+      });
+
+      activeTab.focus({preventScroll:true});
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => setActiveTab(tab.id));
+      tab.addEventListener('keydown', (e) => {
+        const idx = tabs.indexOf(tab);
+        if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+          e.preventDefault();
+          const dir = e.key === 'ArrowRight' ? 1 : -1;
+          const next = (idx + dir + tabs.length) % tabs.length;
+          setActiveTab(tabs[next].id);
+        }
+        if(e.key === 'Home'){ e.preventDefault(); setActiveTab(tabs[0].id); }
+        if(e.key === 'End'){ e.preventDefault(); setActiveTab(tabs[tabs.length-1].id); }
+      });
+    });
+  </script>
+</body>
+</html>
